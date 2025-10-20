@@ -1,4 +1,10 @@
 from django.db import models
+from django_fsm import FSMField, transition
+
+
+class CreditRequestStateChoice(models.TextChoices):
+    REQUESTED = 'requested'
+    ACCEPTED = 'accepted'
 
 
 class Salesman(models.Model):
@@ -11,10 +17,20 @@ class Salesman(models.Model):
 class CreditRequest(models.Model):
     salesman = models.ForeignKey(to=Salesman, on_delete=models.CASCADE)
     amount = models.IntegerField()
-    state = models.CharField(max_length=20)
+    state = FSMField(
+        choices=CreditRequestStateChoice.choices,
+        default=CreditRequestStateChoice.REQUESTED,
+    )
 
     def __str__(self):
         return f'{self.amount} - {self.salesman} ({self.state})'
+
+    @transition(field='state',
+                source=CreditRequestStateChoice.REQUESTED,
+                target=CreditRequestStateChoice.ACCEPTED,
+                custom={'button_name': 'set as accepted'})
+    def set_as_accepted(self):
+        pass
 
 
 class PhoneNumber(models.Model):
