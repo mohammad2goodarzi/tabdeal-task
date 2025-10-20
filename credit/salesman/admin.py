@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Salesman, CreditRequest, PhoneNumber, CreditTransfer
+
+
+admin.site.register(Salesman)
+admin.site.register(CreditRequest)
+admin.site.register(PhoneNumber)
+admin.site.register(CreditTransfer)
