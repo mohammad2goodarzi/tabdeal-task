@@ -1,1 +1,4 @@
 django==4.2.25
+djangorestframework==3.16.1
+django-fsm==3.0.1
+django-fsm-log==3.1.0
