@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Value, Sum, F
+from django.db.models.functions import Coalesce
 from django_fsm import FSMField, transition
 
 
@@ -19,7 +21,26 @@ class CreditRequestQuerySet(models.QuerySet):
         )
 
 
+class SalesmanQuerySet(models.QuerySet):
+    def annotate_total_credit(self, *args, **kwargs):
+        return (
+            super(SalesmanQuerySet, self)
+            .filter(*args, **kwargs)
+            .annotate(
+                requested_credit=Coalesce(
+                    Sum('creditrequest__amount'), Value(0)
+                ),
+                transferred_credit=Coalesce(
+                    Sum('credittransfer__amount'), Value(0)
+                ),
+                total_credit=F('requested_credit') - F('transferred_credit')
+            )
+        )
+
+
 class Salesman(models.Model):
+    objects = SalesmanQuerySet.as_manager()
+
     name = models.CharField(max_length=200)
 
     def __str__(self):
