@@ -3,8 +3,8 @@ from rest_framework.generics import CreateAPIView, UpdateAPIView, GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from salesman.api.v1.serializers import CreditRequestSerializer
-from salesman.models import CreditRequest
+from salesman.api.v1.serializers import CreditRequestSerializer, CreditTransferSerializer
+from salesman.models import CreditRequest, CreditTransfer
 
 
 class CreditRequestAPIView(CreateAPIView):
@@ -12,7 +12,7 @@ class CreditRequestAPIView(CreateAPIView):
 
 
 class CreditAcceptAPIView(GenericAPIView):
-    queryset = CreditRequest.objects.all()
+    queryset = CreditRequest.objects.requested()
     serializer_class = CreditRequestSerializer
 
     def post(self, request, *args, **kwargs):
@@ -20,3 +20,7 @@ class CreditAcceptAPIView(GenericAPIView):
         instance.set_as_accepted()
         data = self.get_serializer(instance=instance).data
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class CreditTransferAPIView(CreateAPIView):
+    serializer_class = CreditTransferSerializer
