@@ -17,6 +17,6 @@ class CreditTransferSerializer(serializers.ModelSerializer):
     def is_valid(self, *, raise_exception=False):
         result = super(CreditTransferSerializer, self).is_valid(raise_exception=raise_exception)
         salesman = Salesman.objects.annotate_total_credit().get(id=self.initial_data['salesman'])
-        if salesman.total_credit < self.initial_data['amount']:
+        if salesman.total_credit < self.validated_data['amount']:
             raise serializers.ValidationError({'amount': 'amount is greater than your credit'})
         return result
