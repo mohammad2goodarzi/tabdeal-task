@@ -7,6 +7,18 @@ class CreditRequestStateChoice(models.TextChoices):
     ACCEPTED = 'accepted'
 
 
+class CreditRequestQuerySet(models.QuerySet):
+    def requested(self, *args, **kwargs):
+        return super(CreditRequestQuerySet, self).filter(*args, **kwargs).filter(
+            state=CreditRequestStateChoice.REQUESTED,
+        )
+
+    def accepted(self, *args, **kwargs):
+        return super(CreditRequestQuerySet, self).filter(*args, **kwargs).filter(
+            state=CreditRequestStateChoice.ACCEPTED,
+        )
+
+
 class Salesman(models.Model):
     name = models.CharField(max_length=200)
 
@@ -15,6 +27,8 @@ class Salesman(models.Model):
 
 
 class CreditRequest(models.Model):
+    objects = CreditRequestQuerySet.as_manager()
+
     salesman = models.ForeignKey(to=Salesman, on_delete=models.CASCADE)
     amount = models.IntegerField()
     state = FSMField(
