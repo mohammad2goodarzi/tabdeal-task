@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: gunicorn credit.wsgi:application --workers 5 --threads=2 --timeout 60 --bind 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=1
+      - DJANGO_SETTINGS_MODULE=credit.settings
+      - POSTGRES_DB=credit
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_HOST=db
+    networks:
+      - appnet
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: credit
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - appnet
+
+volumes:
+  pgdata:
+
+networks:
+  appnet:
