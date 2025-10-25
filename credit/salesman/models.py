@@ -1,7 +1,5 @@
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Value, Sum, F, FilteredRelation, Q
-from django.db.models.functions import Coalesce
 from django_fsm import FSMField, transition
 
 
