@@ -22,31 +22,10 @@ class CreditRequestQuerySet(models.QuerySet):
         )
 
 
-class SalesmanQuerySet(models.QuerySet):
-    def annotate_total_credit(self, *args, **kwargs):
-        return (
-            super(SalesmanQuerySet, self)
-            .filter(*args, **kwargs)
-            .annotate(
-                accepted_credit_requests=FilteredRelation(
-                    'creditrequest',
-                    condition=Q(creditrequest__state=CreditRequestStateChoice.ACCEPTED)
-                ),
-                requested_credit=Coalesce(
-                    Sum('accepted_credit_requests__amount'), Value(0)
-                ),
-                transferred_credit=Coalesce(
-                    Sum('credittransfer__amount'), Value(0)
-                ),
-                total_credit=F('requested_credit') - F('transferred_credit')
-            )
-        )
-
-
 class Salesman(models.Model):
-    objects = SalesmanQuerySet.as_manager()
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=200)
+    total_credit = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
