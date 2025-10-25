@@ -43,10 +43,9 @@ class SalesmanQuerySet(models.QuerySet):
         )
 
 
-
 class Salesman(models.Model):
     objects = SalesmanQuerySet.as_manager()
-
+    created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=200)
 
     def __str__(self):
@@ -55,7 +54,7 @@ class Salesman(models.Model):
 
 class CreditRequest(models.Model):
     objects = CreditRequestQuerySet.as_manager()
-
+    created_at = models.DateTimeField(auto_now_add=True)
     salesman = models.ForeignKey(to=Salesman, on_delete=models.CASCADE)
     amount = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     state = FSMField(
@@ -82,6 +81,7 @@ class PhoneNumber(models.Model):
 
 
 class CreditTransfer(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
     salesman = models.ForeignKey(to=Salesman, on_delete=models.CASCADE)
     amount = models.IntegerField()
     phone_number = models.ForeignKey(to=PhoneNumber, on_delete=models.CASCADE)  # CASCADE?? what if I use SET_NULL??
