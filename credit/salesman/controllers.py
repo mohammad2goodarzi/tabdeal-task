@@ -5,6 +5,7 @@ from salesman.models import CreditTransfer, Salesman
 
 class CreditController:
     def accept(self, db_obj):
+        # What if I use a post save signal? or override save method? or any other options?
         with transaction.atomic():
             db_obj.set_as_accepted()
             salesman = Salesman.objects.select_for_update().get(pk=db_obj.salesman.pk)
